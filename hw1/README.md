@@ -40,14 +40,9 @@
 
 ### Бизнес события
 
-- Auth service:
-
-- - Попуг создан/удален [id, роль и ФИО]. Потребители: Task service | Accounting service | Analytics service
-
----
-
 - Task service:
 
+- - Задача создана [id, попуг-создатель.id, попуг-исполнитель.id]. Потребители: Accounting service | Analytics service
 - - Задача заассайнена [какая задача и на кого (попуг)]. Потребители: Accounting service
 - - Задача выполнена [какая задача и кем (попуг)]. Потребители: Accounting service
 - - Затребован реассайн задач (возможно полезно для аналитики будет) [кто затребовал (попуг)]. Потребители: Accounting service | Analytics service
@@ -65,17 +60,12 @@
 
 - Auth service:
 
-- - Попуг изменен [id, роль и ФИО]. Потребители: Task service | Accounting service | Analytics service
-
----
-
-- Task service:
-
-- - Задача создана [id, попуг-создатель.id, попуг-исполнитель.id, стоимость ассайна, вознаграждение за выполнение]. Потребители: Accounting service | Analytics service
+- - Попуг создан/изменен/удален [id, роль и ФИО]. Потребители: Task service | Accounting service | Analytics service
 
 ---
 
 - Accounting service:
 
+- - Обновлена задача [стоимость ассайна, вознаграждение за выполнение]. Потребители: Analytics service
 - - Аккаунт создан [id, попуг.id]. Потребители: Analytics service
 - - Аудит-лог создан [id, аккаунт.id, тип, сумма, причина (задача.id)]. Потребители: Analytics service
