@@ -6,4 +6,4 @@
 
 0. [Решение ДО](<./assets/v1/Awesome%20Task%20Exchange%20System%20(aTES)%20v1.jpg>)
 
-1. [Проектирование](./hw1/)
+1. [Проектирование](./design/)
