@@ -1,0 +1,7 @@
+django==3.2.*
+python-dotenv
+djangorestframework==3.13.*
+djangorestframework_simplejwt
+drf-yasg
+django-filter
+dynamic-rest
