@@ -56,6 +56,7 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "apps.api",
+    "apps.kafka_util",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -190,4 +191,11 @@ DYNAMIC_REST = {
     "PAGE_QUERY_PARAM": "page",
     "PAGE_SIZE": None,
     "PAGE_SIZE_QUERY_PARAM": "per_page",
+}
+
+KAFKA_SETTINGS = {
+    "BOOTSTRAP_SERVERS": os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
+    "CLIENT_ID": os.getenv("KAFKA_CLIENT_ID"),
+    "VALUE_SERIALIZER": os.getenv("KAFKA_VALUE_SERIALIZER", "apps.kafka_util.serializers.json_serialize"),
+    "VALUE_DESERIALIZER": os.getenv("KAFKA_VALUE_DESERIALIZER", "apps.kafka_util.serializers.json_deserialize"),
 }
