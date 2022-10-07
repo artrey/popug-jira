@@ -1,0 +1,22 @@
+POST http://localhost:8000/api/v1/token/
+
+{
+  "username": "admin",
+  "password": "develop"
+}
+
+###
+
+POST http://localhost:8000/api/v1/token/refresh/
+
+{
+  "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTY2NjMxMTI1MCwiaWF0IjoxNjY1MTAxNjUwLCJqdGkiOiIxZTVkYWUwYTFlODQ0YWQ3YWQ2YzhhOTY0OTc1ZThjYyIsInVzZXJfaWQiOjF9.ZWVlxdlBHQKn_nnJ0F5lyeG7vKr7OdyqKKLyUs9LtRc"
+}
+
+###
+
+POST http://localhost:8000/api/v1/token/verify/
+
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjY1MTAyNTUwLCJpYXQiOjE2NjUxMDE2NTAsImp0aSI6ImY4OGYwMzY4ZWU4NDRhMWNhY2ZiNjgxNWRlNzNjNzgxIiwidXNlcl9pZCI6MX0.aFF3OlHPpfuzvyfyn7O4fOs5D5OJ4dcztZNfA8yvhNs"
+}

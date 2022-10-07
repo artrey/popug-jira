@@ -173,7 +173,7 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("JWT",),
     "BLACKLIST_AFTER_ROTATION": False,
     "UPDATE_LAST_LOGIN": True,
-    "USER_ID_FIELD": "id",
+    "USER_ID_FIELD": "public_id",
 }
 
 SWAGGER_SETTINGS = {

@@ -1,13 +1,14 @@
 from django.urls import include, path
-from dynamic_rest.routers import DynamicRouter
+from rest_framework_simplejwt.views import TokenObtainPairView, token_refresh, token_verify
 
+from apps.api.serializers.token import TokenObtainPairSerializer
 
-class ApiRouter(DynamicRouter):
-    include_root_view = False
-
-
-router = ApiRouter()
+token_urls = [
+    path("", TokenObtainPairView.as_view(serializer_class=TokenObtainPairSerializer)),
+    path("refresh/", token_refresh),
+    path("verify/", token_verify),
+]
 
 urlpatterns = [
-    path("", include(router.urls)),
+    path("token/", include(token_urls)),
 ]
