@@ -1,3 +1,4 @@
+import dataclasses
 import functools
 import time
 import typing as ty
@@ -5,6 +6,8 @@ import typing as ty
 from django.conf import settings
 from django.utils.module_loading import import_string
 from kafka import KafkaConsumer, KafkaProducer
+
+from apps.kafka_util.models import Message
 
 
 def kafka_params(**override_params) -> dict:
@@ -23,8 +26,11 @@ def default_kafka_producer() -> KafkaProducer:
     return KafkaProducer(**params)
 
 
-def send_message(topic: str, value: ty.Union[bytes, dict]):
+def send_message(topic: str, value: ty.Union[Message, dict]):
     producer = default_kafka_producer()
+    if isinstance(value, Message):
+        value = dataclasses.asdict(value)
+        value["data"] = dataclasses.asdict(value["data"])
     producer.send(topic, value)
 
 

@@ -55,6 +55,7 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
+    "apps.users",
     "apps.api",
     "apps.kafka_util",
 ]
@@ -89,7 +90,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "auth.wsgi.application"
+WSGI_APPLICATION = "task_tracker.wsgi.application"
 
 
 # Database
@@ -101,6 +102,8 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
+AUTH_USER_MODEL = "users.User"
 
 
 # Password validation
