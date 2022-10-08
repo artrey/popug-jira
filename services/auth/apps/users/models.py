@@ -5,6 +5,7 @@ from django.db import models
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 
+import apps.kafka_util.proto as kafka_proto
 from apps import kafka_util
 
 
@@ -37,11 +38,11 @@ class User(AbstractUser):
 def user_streaming_create_update(instance: User, created: bool, **kwargs):
     kafka_util.send_message(
         "user-streaming",
-        kafka_util.models.Message(
+        kafka_proto.Message(
             entity="user",
-            event="create" if created else "update",
+            event=kafka_proto.EventType.CREATE if created else kafka_proto.EventType.UPDATE,
             public_id=str(instance.public_id),
-            data=kafka_util.models.User(
+            data=kafka_proto.User(
                 **{
                     param: str(getattr(instance, param, ""))
                     for param in [
@@ -60,10 +61,9 @@ def user_streaming_create_update(instance: User, created: bool, **kwargs):
 def user_streaming_delete(instance: User, **kwargs):
     kafka_util.send_message(
         "user-streaming",
-        kafka_util.models.Message(
+        kafka_proto.Message(
             entity="user",
-            event="delete",
+            event=kafka_proto.EventType.DELETE,
             public_id=str(instance.public_id),
-            data=None,
         ),
     )
