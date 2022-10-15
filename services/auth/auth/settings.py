@@ -55,6 +55,7 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
+    "apps.users",
     "apps.api",
     "apps.kafka_util",
 ]
@@ -101,6 +102,8 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
+AUTH_USER_MODEL = "users.User"
 
 
 # Password validation
@@ -170,7 +173,7 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("JWT",),
     "BLACKLIST_AFTER_ROTATION": False,
     "UPDATE_LAST_LOGIN": True,
-    "USER_ID_FIELD": "id",
+    "USER_ID_FIELD": "public_id",
 }
 
 SWAGGER_SETTINGS = {

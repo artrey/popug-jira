@@ -6,3 +6,4 @@ drf-yasg
 django-filter
 dynamic-rest
 kafka-python
+pydantic

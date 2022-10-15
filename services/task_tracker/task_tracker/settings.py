@@ -55,6 +55,8 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
+    "apps.users",
+    "apps.tasks",
     "apps.api",
     "apps.kafka_util",
 ]
@@ -89,7 +91,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "auth.wsgi.application"
+WSGI_APPLICATION = "task_tracker.wsgi.application"
 
 
 # Database
@@ -101,6 +103,8 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
+AUTH_USER_MODEL = "users.User"
 
 
 # Password validation
@@ -165,12 +169,15 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
+    "AUTH_TOKEN_CLASSES": [
+        "task_tracker.authentication.AccessToken",
+    ],
     "ACCESS_TOKEN_LIFETIME": dt.timedelta(minutes=15),
     "REFRESH_TOKEN_LIFETIME": dt.timedelta(days=14),
     "AUTH_HEADER_TYPES": ("JWT",),
     "BLACKLIST_AFTER_ROTATION": False,
     "UPDATE_LAST_LOGIN": True,
-    "USER_ID_FIELD": "id",
+    "USER_ID_FIELD": "public_id",
 }
 
 SWAGGER_SETTINGS = {
@@ -199,3 +206,5 @@ KAFKA_SETTINGS = {
     "VALUE_SERIALIZER": os.getenv("KAFKA_VALUE_SERIALIZER", "apps.kafka_util.serializers.json_serialize"),
     "VALUE_DESERIALIZER": os.getenv("KAFKA_VALUE_DESERIALIZER", "apps.kafka_util.serializers.json_deserialize"),
 }
+
+AUTH_SERVER_VERIFY_ENDPOINT = os.getenv("AUTH_SERVER_VERIFY_ENDPOINT")

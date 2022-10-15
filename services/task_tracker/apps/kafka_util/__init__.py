@@ -6,6 +6,8 @@ from django.conf import settings
 from django.utils.module_loading import import_string
 from kafka import KafkaConsumer, KafkaProducer
 
+import apps.kafka_util.proto as kafka_proto
+
 
 def kafka_params(**override_params) -> dict:
     return {
@@ -23,8 +25,10 @@ def default_kafka_producer() -> KafkaProducer:
     return KafkaProducer(**params)
 
 
-def send_message(topic: str, value: ty.Union[bytes, dict]):
+def send_message(topic: str, value: ty.Union[kafka_proto.Message, dict]):
     producer = default_kafka_producer()
+    if isinstance(value, kafka_proto.Message):
+        value = value.dict()
     producer.send(topic, value)
 
 
