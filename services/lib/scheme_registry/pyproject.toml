@@ -1,0 +1,23 @@
+[tool.black]
+line-length = 120
+exclude = '''
+/(
+  # Copied from: https://github.com/psf/black/blob/master/pyproject.toml
+  | \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | venv
+  | _build
+  | buck-out
+  | build
+  | dist
+
+  # Specific to the project
+  | migrations
+  | static
+  | media
+)/
+'''
