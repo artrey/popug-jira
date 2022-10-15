@@ -1,0 +1,31 @@
+# Python venv
+venv/
+.venv/
+
+# Environments
+*.env
+
+# Builds
+[Bb]uild/
+.mypy_cache/
+.pytest_cache/
+*.egg-info/
+.coverage
+
+# Idea
+.idea/
+__pycache__/
+
+# VS Code
+.vscode/
+
+# service assets
+data/
+static/
+media/
+logs/
+*.sqlite3
+*.db
+db.json
+celerybeat-schedule
+_dumps/
