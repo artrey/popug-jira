@@ -59,6 +59,10 @@
           "title": "Username",
           "type": "string"
         },
+        "email": {
+          "title": "Email",
+          "type": "string"
+        },
         "first_name": {
           "title": "First Name",
           "type": "string"
@@ -74,6 +78,7 @@
       "required": [
         "public_id",
         "username",
+        "email",
         "first_name",
         "last_name",
         "role"

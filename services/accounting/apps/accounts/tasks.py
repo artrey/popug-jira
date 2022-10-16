@@ -1,3 +1,5 @@
+from django.core.mail import send_mail
+
 from accounting.celery import app
 from apps.accounts.models import Account
 
@@ -5,6 +7,20 @@ from apps.accounts.models import Account
 @app.task
 def daily_payouts():
     for account in Account.objects.all():
-        account.create_transaction("payout", "daily payout", credit=account.balance)
+        transaction = None
+        if account.balance > 0:
+            transaction = account.create_transaction(
+                "payout",
+                "daily payout",
+                credit=account.balance,
+            )
         account.current_billing_cycle.close()
-        # TODO: send email
+
+        if transaction:
+            send_mail(
+                "Daily payout",
+                f"You earn ${transaction.credit}",
+                "payout@popug.ai",
+                [account.user.email],
+                fail_silently=True,
+            )

@@ -41,6 +41,7 @@ def user_streaming_create_update(instance: User, created: bool, **kwargs):
             for param in [
                 "public_id",
                 "username",
+                "email",
                 "role",
                 "first_name",
                 "last_name",
