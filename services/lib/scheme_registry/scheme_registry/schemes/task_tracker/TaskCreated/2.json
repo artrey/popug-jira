@@ -55,6 +55,7 @@
         },
         "title": {
           "title": "Title",
+          "pattern": "^[^\\[][^\\]]*",
           "type": "string"
         },
         "jira_id": {

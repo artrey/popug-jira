@@ -1,6 +1,6 @@
 import enum
 
-from pydantic import BaseModel
+from pydantic import BaseModel, constr
 
 from schemes_generator import BaseEventV1
 
@@ -27,7 +27,7 @@ class TaskUpdatedV1(BaseEventV1[TaskDataV1]):
 
 class TaskDataV2(BaseModel):
     public_id: str
-    title: str
+    title: constr(regex=r"^[^\[][^\]]*")  # noqa: F722
     jira_id: str
     status: TaskStatusEnumV1
     executor_public_id: str

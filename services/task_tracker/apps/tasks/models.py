@@ -24,6 +24,7 @@ class Task(models.Model):
 
     public_id = models.UUIDField(default=uuid.uuid4, unique=True)
     title = models.CharField(max_length=100)
+    jira_id = models.CharField(max_length=20)
     description = models.TextField(null=True, blank=True)
     status = models.CharField(max_length=20, choices=[(x, x) for x in STATUSES], default=STATUS_IN_PROGRESS)
     executor = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="tasks", blank=True)
@@ -59,10 +60,10 @@ def task_create_update(instance: Task, created: bool, **kwargs):
     if created:
         producer.send_event(
             "task-registered",
-            {param: str(getattr(instance, param, "")) for param in ["public_id", "title", "status"]}
+            {param: str(getattr(instance, param, "")) for param in ["public_id", "title", "jira_id", "status"]}
             | {"executor_public_id": str(instance.executor.public_id)},
             "task_tracker.TaskCreated",
-            1,
+            2,
         )
 
     elif instance._previous_status != instance.status and instance.status == instance.STATUS_COMPLETED:
@@ -84,8 +85,8 @@ def task_create_update(instance: Task, created: bool, **kwargs):
     else:
         producer.send_event(
             "task-stream",
-            {param: str(getattr(instance, param, "")) for param in ["public_id", "title", "status"]}
+            {param: str(getattr(instance, param, "")) for param in ["public_id", "title", "jira_id", "status"]}
             | {"executor_public_id": str(instance.executor.public_id)},
             "task_tracker.TaskUpdated",
-            1,
+            2,
         )
