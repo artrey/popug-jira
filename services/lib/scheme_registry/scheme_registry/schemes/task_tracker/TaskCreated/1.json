@@ -1,0 +1,49 @@
+{
+  "title": "TaskCreatedV1",
+  "type": "object",
+  "properties": {
+    "public_id": {
+      "title": "Public Id",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/definitions/TaskStatusEnumV1"
+    },
+    "executor_public_id": {
+      "title": "Executor Public Id",
+      "type": "string"
+    },
+    "created_at": {
+      "title": "Created At",
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "title": "Updated At",
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "public_id",
+    "title",
+    "status",
+    "executor_public_id",
+    "created_at",
+    "updated_at"
+  ],
+  "definitions": {
+    "TaskStatusEnumV1": {
+      "title": "TaskStatusEnumV1",
+      "description": "An enumeration.",
+      "enum": [
+        "IN_PROGRESS",
+        "COMPLETED"
+      ]
+    }
+  }
+}
