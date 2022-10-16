@@ -209,7 +209,7 @@ KAFKA_CLIENT_ID = os.getenv("KAFKA_CLIENT_ID")
 KAFKA_CONSUMER_TOPICS = {
     "user-stream": {
         "topic": "user-stream",  # no spaces allowed!
-        "group": "user-stream",
+        "group": f"{KAFKA_CLIENT_ID}-user-stream",
         "client": KAFKA_CLIENT_ID,
         "subscribers": ["apps.users.consumers.UserConsumerV1"],
         "message_processor": "common-processor",  # lookup in KAFKA_CONSUMERS_MESSAGE_PROCESSORS
