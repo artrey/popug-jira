@@ -6,4 +6,7 @@ drf-yasg
 django-filter
 dynamic-rest
 kafka-python
-pydantic
+
+# local libs: `python setup.py develop` from project root
+# kafka-util
+# scheme-registry
