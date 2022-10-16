@@ -2,39 +2,39 @@
   "title": "TaskCreatedV1",
   "type": "object",
   "properties": {
-    "public_id": {
-      "title": "Public Id",
+    "event_id": {
+      "title": "Event Id",
+      "type": "string",
+      "format": "uuid"
+    },
+    "event_name": {
+      "title": "Event Name",
       "type": "string"
     },
-    "title": {
-      "title": "Title",
-      "type": "string"
+    "event_version": {
+      "title": "Event Version",
+      "type": "integer"
     },
-    "status": {
-      "$ref": "#/definitions/TaskStatusEnumV1"
-    },
-    "executor_public_id": {
-      "title": "Executor Public Id",
-      "type": "string"
-    },
-    "created_at": {
-      "title": "Created At",
+    "event_time": {
+      "title": "Event Time",
       "type": "string",
       "format": "date-time"
     },
-    "updated_at": {
-      "title": "Updated At",
-      "type": "string",
-      "format": "date-time"
+    "producer": {
+      "title": "Producer",
+      "type": "string"
+    },
+    "data": {
+      "$ref": "#/definitions/TaskCreatedDataV1"
     }
   },
   "required": [
-    "public_id",
-    "title",
-    "status",
-    "executor_public_id",
-    "created_at",
-    "updated_at"
+    "event_id",
+    "event_name",
+    "event_version",
+    "event_time",
+    "producer",
+    "data"
   ],
   "definitions": {
     "TaskStatusEnumV1": {
@@ -43,6 +43,45 @@
       "enum": [
         "IN_PROGRESS",
         "COMPLETED"
+      ]
+    },
+    "TaskCreatedDataV1": {
+      "title": "TaskCreatedDataV1",
+      "type": "object",
+      "properties": {
+        "public_id": {
+          "title": "Public Id",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/TaskStatusEnumV1"
+        },
+        "executor_public_id": {
+          "title": "Executor Public Id",
+          "type": "string"
+        },
+        "created_at": {
+          "title": "Created At",
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "title": "Updated At",
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "public_id",
+        "title",
+        "status",
+        "executor_public_id",
+        "created_at",
+        "updated_at"
       ]
     }
   }
