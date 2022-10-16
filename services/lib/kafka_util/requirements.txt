@@ -1,0 +1,3 @@
+scheme_registry
+django
+django-kafka-consumer
