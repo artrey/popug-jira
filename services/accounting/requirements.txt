@@ -1,0 +1,14 @@
+django==3.2.*
+python-dotenv
+djangorestframework==3.13.*
+djangorestframework_simplejwt
+drf-yasg
+django-filter
+dynamic-rest
+kafka-python
+pydantic
+django-kafka-consumer
+
+# local libs: `python setup.py develop` from project root
+# kafka-util
+# scheme-registry
