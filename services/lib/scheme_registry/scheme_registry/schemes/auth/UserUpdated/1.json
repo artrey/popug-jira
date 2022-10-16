@@ -1,5 +1,5 @@
 {
-  "title": "UserRegisteredV1",
+  "title": "UserUpdatedV1",
   "type": "object",
   "properties": {
     "event_id": {
@@ -25,7 +25,7 @@
       "type": "string"
     },
     "data": {
-      "$ref": "#/definitions/UserRegisteredDataV1"
+      "$ref": "#/definitions/UserDataV1"
     }
   },
   "required": [
@@ -47,13 +47,14 @@
         "Попуг"
       ]
     },
-    "UserRegisteredDataV1": {
-      "title": "UserRegisteredDataV1",
+    "UserDataV1": {
+      "title": "UserDataV1",
       "type": "object",
       "properties": {
         "public_id": {
           "title": "Public Id",
-          "type": "string"
+          "type": "string",
+          "format": "uuid"
         },
         "username": {
           "title": "Username",

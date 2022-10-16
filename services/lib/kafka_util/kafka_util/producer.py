@@ -26,19 +26,20 @@ def default_kafka_producer() -> KafkaProducer:
 
 
 def send_event(topic: str, value: ty.Optional[dict], event_name: str, version: int, raise_error: bool = False) -> bool:
-    producer = default_kafka_producer()
-    success = settings.SCHEME_REGISTRY.validate_event(value, event_name, version, raise_error)
+    event_data = {
+        "event_id": str(uuid.uuid4()),
+        "event_name": event_name,
+        "event_version": version,
+        "event_time": dt.datetime.utcnow(),
+        "producer": settings.KAFKA_CLIENT_ID,
+        "data": value,
+    }
+    success = settings.SCHEME_REGISTRY.validate_event(event_data, event_name, version, raise_error)
+
     if success:
-        event = {
-            "event_id": str(uuid.uuid4()),
-            "event_name": event_name,
-            "event_version": version,
-            "event_time": dt.datetime.utcnow(),
-            "producer": settings.KAFKA_CLIENT_ID,
-            "data": value,
-        }
-        blob = json_serialize(event)
+        producer = default_kafka_producer()
+        blob = json_serialize(event_data)
         producer.send(topic, blob)
     else:
-        logger.error(f"Invalid event: {value=}")
+        logger.error(f"Invalid event: {event_data}")
     return success

@@ -46,7 +46,7 @@ def user_streaming_create_update(instance: User, created: bool, **kwargs):
                 "last_name",
             ]
         },
-        "auth.UserRegistered" if created else "auth.UserUpdated",
+        "auth.UserCreated" if created else "auth.UserUpdated",
         1,
     )
 

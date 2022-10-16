@@ -1,3 +1,5 @@
-scheme_registry
 django
 django-kafka-consumer
+
+# local libs: `python setup.py develop` from project root
+# scheme_registry
