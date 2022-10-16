@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import models, transaction
+from django.utils import timezone
 
 from apps.users.models import User
 
@@ -55,6 +56,11 @@ class BillingCycle(models.Model):
     end_date = models.DateTimeField(null=True, blank=True)
     closed = models.BooleanField(default=False, db_index=True)
     account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="billing_cycles")
+
+    def close(self):
+        self.closed = True
+        self.end_date = timezone.now()
+        self.save(update_fields=["closed", "end_date"])
 
     def __str__(self):
         return str(self.public_id)

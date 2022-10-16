@@ -8,6 +8,7 @@ dynamic-rest
 kafka-python
 pydantic
 django-kafka-consumer
+celery
 
 # local libs: `python setup.py develop` from project root
 # kafka-util

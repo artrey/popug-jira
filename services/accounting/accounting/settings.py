@@ -16,6 +16,7 @@ from distutils.util import strtobool
 from pathlib import Path
 
 import scheme_registry
+from celery.schedules import crontab
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -278,3 +279,12 @@ KAFKA_CONSUMER_SSL_SETTINGS = {
 }
 
 AUTH_SERVER_VERIFY_ENDPOINT = os.getenv("AUTH_SERVER_VERIFY_ENDPOINT")
+
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://127.0.0.1:6379/5")
+CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://127.0.0.1:6379/6")
+CELERY_BEAT_SCHEDULE = {
+    "daily-payouts": {
+        "task": "apps.accounts.tasks.daily_payouts",
+        "schedule": crontab(minute=0, hour=0),
+    },
+}
