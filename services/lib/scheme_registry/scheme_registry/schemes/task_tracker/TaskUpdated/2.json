@@ -1,0 +1,81 @@
+{
+  "title": "TaskUpdatedV2",
+  "type": "object",
+  "properties": {
+    "event_id": {
+      "title": "Event Id",
+      "type": "string",
+      "format": "uuid"
+    },
+    "event_name": {
+      "title": "Event Name",
+      "type": "string"
+    },
+    "event_version": {
+      "title": "Event Version",
+      "type": "integer"
+    },
+    "event_time": {
+      "title": "Event Time",
+      "type": "string",
+      "format": "date-time"
+    },
+    "producer": {
+      "title": "Producer",
+      "type": "string"
+    },
+    "data": {
+      "$ref": "#/definitions/TaskDataV2"
+    }
+  },
+  "required": [
+    "event_id",
+    "event_name",
+    "event_version",
+    "event_time",
+    "producer",
+    "data"
+  ],
+  "definitions": {
+    "TaskStatusEnumV1": {
+      "title": "TaskStatusEnumV1",
+      "description": "An enumeration.",
+      "enum": [
+        "В работе",
+        "Завершена"
+      ]
+    },
+    "TaskDataV2": {
+      "title": "TaskDataV2",
+      "type": "object",
+      "properties": {
+        "public_id": {
+          "title": "Public Id",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "jira_id": {
+          "title": "Jira Id",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/TaskStatusEnumV1"
+        },
+        "executor_public_id": {
+          "title": "Executor Public Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "public_id",
+        "title",
+        "jira_id",
+        "status",
+        "executor_public_id"
+      ]
+    }
+  }
+}
