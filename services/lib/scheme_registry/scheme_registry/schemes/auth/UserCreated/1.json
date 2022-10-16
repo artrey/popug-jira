@@ -53,8 +53,7 @@
       "properties": {
         "public_id": {
           "title": "Public Id",
-          "type": "string",
-          "format": "uuid"
+          "type": "string"
         },
         "username": {
           "title": "Username",

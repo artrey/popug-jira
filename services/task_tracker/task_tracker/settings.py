@@ -15,6 +15,7 @@ import os
 from distutils.util import strtobool
 from pathlib import Path
 
+import scheme_registry
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -52,13 +53,13 @@ THIRD_PARTY_APPS = [
     "dynamic_rest",
     "drf_yasg",
     "django_filters",
+    "kafka_consumer",
 ]
 
 LOCAL_APPS = [
     "apps.users",
     "apps.tasks",
     "apps.api",
-    "apps.kafka_util",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -200,11 +201,31 @@ DYNAMIC_REST = {
     "PAGE_SIZE_QUERY_PARAM": "per_page",
 }
 
-KAFKA_SETTINGS = {
-    "BOOTSTRAP_SERVERS": os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
-    "CLIENT_ID": os.getenv("KAFKA_CLIENT_ID"),
-    "VALUE_SERIALIZER": os.getenv("KAFKA_VALUE_SERIALIZER", "apps.kafka_util.serializers.json_serialize"),
-    "VALUE_DESERIALIZER": os.getenv("KAFKA_VALUE_DESERIALIZER", "apps.kafka_util.serializers.json_deserialize"),
+SCHEME_REGISTRY = scheme_registry.SchemeRegistry()
+
+KAFKA_HOSTS = os.getenv("KAFKA_BOOTSTRAP_SERVERS")
+KAFKA_CLIENT_ID = os.getenv("KAFKA_CLIENT_ID")
+KAFKA_CONSUMER_TOPICS = {
+    "user-stream": {
+        "topic": "user-stream",  # no spaces allowed!
+        "group": "user-stream",
+        "client": KAFKA_CLIENT_ID,
+        "subscribers": ["apps.users.consumers.UserConsumerV1"],
+        "message_processor": "common-processor",  # lookup in KAFKA_CONSUMERS_MESSAGE_PROCESSORS
+        "wait": 0,  # optional, indicates how many seconds Kafka will wait to fillup buffer, None or ommited means wait forever
+        "max_number_of_messages_in_batch": 200,
+        "consumer_options": {  # Overrides options used to create KafkaConsumer
+            "auto_offset_reset": "earliest",
+        },
+    },
+}
+KAFKA_CONSUMERS_MESSAGE_PROCESSORS = {
+    "common-processor": {
+        "class": "kafka_util.consumer.MessageProcessor",
+    },
+}
+KAFKA_CONSUMER_SSL_SETTINGS = {
+    "security_protocol": "PLAINTEXT",
 }
 
 AUTH_SERVER_VERIFY_ENDPOINT = os.getenv("AUTH_SERVER_VERIFY_ENDPOINT")

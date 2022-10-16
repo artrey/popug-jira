@@ -25,7 +25,7 @@
       "type": "string"
     },
     "data": {
-      "$ref": "#/definitions/TaskCreatedDataV1"
+      "$ref": "#/definitions/TaskDataV1"
     }
   },
   "required": [
@@ -41,12 +41,12 @@
       "title": "TaskStatusEnumV1",
       "description": "An enumeration.",
       "enum": [
-        "IN_PROGRESS",
-        "COMPLETED"
+        "В работе",
+        "Завершена"
       ]
     },
-    "TaskCreatedDataV1": {
-      "title": "TaskCreatedDataV1",
+    "TaskDataV1": {
+      "title": "TaskDataV1",
       "type": "object",
       "properties": {
         "public_id": {
@@ -63,25 +63,13 @@
         "executor_public_id": {
           "title": "Executor Public Id",
           "type": "string"
-        },
-        "created_at": {
-          "title": "Created At",
-          "type": "string",
-          "format": "date-time"
-        },
-        "updated_at": {
-          "title": "Updated At",
-          "type": "string",
-          "format": "date-time"
         }
       },
       "required": [
         "public_id",
         "title",
         "status",
-        "executor_public_id",
-        "created_at",
-        "updated_at"
+        "executor_public_id"
       ]
     }
   }

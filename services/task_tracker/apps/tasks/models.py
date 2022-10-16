@@ -5,9 +5,8 @@ import uuid
 from django.db import models
 from django.db.models.signals import post_init, post_save
 from django.dispatch import receiver
+from kafka_util import producer
 
-import apps.kafka_util.proto as kafka_proto
-from apps import kafka_util
 from apps.tasks.exceptions import NoAvailablePopugs
 from apps.users.models import User
 
@@ -47,37 +46,46 @@ class Task(models.Model):
         return self.title
 
 
-@receiver(post_init, sender=Task, dispatch_uid="task_remember_executor")
-def task_remember_executor(instance: Task, **kwargs):
-    instance._previous_executor = instance.executor
+@receiver(post_init, sender=Task, dispatch_uid="task_remember_state")
+def task_remember_state(instance: Task, **kwargs):
+    instance._previous_executor_id = instance.executor_id
+    instance._previous_status = instance.status
 
 
 @receiver(post_save, sender=Task, dispatch_uid="task_create_update")
 def task_create_update(instance: Task, created: bool, **kwargs):
-    def build_message(event_type: kafka_proto.EventType) -> kafka_proto.Message:
-        return kafka_proto.Message(
-            entity="task",
-            event=event_type,
-            public_id=str(instance.public_id),
-            data=kafka_proto.Task(
-                **{
-                    param: getattr(instance, param)
-                    for param in [
-                        "title",
-                        "status",
-                        "created_at",
-                        "updated_at",
-                    ]
-                },
-                executor_public_id=str(instance.executor.public_id),
-            ),
-        )
+    # TODO: think about batch sending
 
     if created:
-        kafka_util.send_message("task-registered", build_message(kafka_proto.EventType.BUSINESS))
-    elif instance.status == Task.STATUS_COMPLETED:
-        kafka_util.send_message("task-completed", build_message(kafka_proto.EventType.BUSINESS))
-    elif instance._previous_executor != instance.executor:
-        kafka_util.send_message("task-assigned", build_message(kafka_proto.EventType.BUSINESS))
+        producer.send_event(
+            "task-registered",
+            {param: str(getattr(instance, param, "")) for param in ["public_id", "title", "status"]}
+            | {"executor_public_id": str(instance.executor.public_id)},
+            "task_tracker.TaskCreated",
+            1,
+        )
+
+    elif instance._previous_status != instance.status and instance.status == instance.STATUS_COMPLETED:
+        producer.send_event(
+            "task-completed",
+            {"public_id": str(instance.public_id), "executor_public_id": str(instance.executor.public_id)},
+            "task_tracker.TaskCompleted",
+            1,
+        )
+
+    elif instance._previous_executor_id != instance.executor_id:
+        producer.send_event(
+            "task-assigned",
+            {"public_id": str(instance.public_id), "executor_public_id": str(instance.executor.public_id)},
+            "task_tracker.TaskAssigned",
+            1,
+        )
+
     else:
-        kafka_util.send_message("task-streaming", build_message(kafka_proto.EventType.UPDATE))
+        producer.send_event(
+            "task-stream",
+            {param: str(getattr(instance, param, "")) for param in ["public_id", "title", "status"]}
+            | {"executor_public_id": str(instance.executor.public_id)},
+            "task_tracker.TaskUpdated",
+            1,
+        )

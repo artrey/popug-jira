@@ -1,5 +1,5 @@
 {
-  "title": "UserUpdatedV1",
+  "title": "TaskUpdatedV1",
   "type": "object",
   "properties": {
     "event_id": {
@@ -25,7 +25,7 @@
       "type": "string"
     },
     "data": {
-      "$ref": "#/definitions/UserDataV1"
+      "$ref": "#/definitions/TaskDataV1"
     }
   },
   "required": [
@@ -37,46 +37,39 @@
     "data"
   ],
   "definitions": {
-    "UserRoleEnumV1": {
-      "title": "UserRoleEnumV1",
+    "TaskStatusEnumV1": {
+      "title": "TaskStatusEnumV1",
       "description": "An enumeration.",
       "enum": [
-        "Администратор",
-        "Менеджер",
-        "Бухгалтер",
-        "Попуг"
+        "В работе",
+        "Завершена"
       ]
     },
-    "UserDataV1": {
-      "title": "UserDataV1",
+    "TaskDataV1": {
+      "title": "TaskDataV1",
       "type": "object",
       "properties": {
         "public_id": {
           "title": "Public Id",
           "type": "string"
         },
-        "username": {
-          "title": "Username",
+        "title": {
+          "title": "Title",
           "type": "string"
         },
-        "first_name": {
-          "title": "First Name",
-          "type": "string"
+        "status": {
+          "$ref": "#/definitions/TaskStatusEnumV1"
         },
-        "last_name": {
-          "title": "Last Name",
+        "executor_public_id": {
+          "title": "Executor Public Id",
           "type": "string"
-        },
-        "role": {
-          "$ref": "#/definitions/UserRoleEnumV1"
         }
       },
       "required": [
         "public_id",
-        "username",
-        "first_name",
-        "last_name",
-        "role"
+        "title",
+        "status",
+        "executor_public_id"
       ]
     }
   }
