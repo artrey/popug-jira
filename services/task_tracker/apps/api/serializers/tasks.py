@@ -11,7 +11,7 @@ class TaskSerializer(DynamicModelSerializer):
 
     class Meta:
         model = Task
-        fields = ["id", "public_id", "title", "description", "status", "executor"]
+        fields = ["id", "public_id", "jira_id", "title", "description", "status", "executor"]
 
     def validate_status(self, value):
         view = self.context["view"]

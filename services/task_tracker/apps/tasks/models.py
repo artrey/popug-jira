@@ -44,7 +44,7 @@ class Task(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.title
+        return f"[{self.jira_id}] {self.title}"
 
 
 @receiver(post_init, sender=Task, dispatch_uid="task_remember_state")
