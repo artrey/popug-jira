@@ -13,8 +13,8 @@ class SchemeRegistry:
         self.schemes_path = str(schemes_path or default_path)
 
     def validate_event(self, data: dict, name: str, version: int = 1, raise_error: bool = False) -> bool:
-        scheme = self._load_scheme(name, version)
         try:
+            scheme = self._load_scheme(name, version)
             validate(instance=data, schema=scheme)
         except Exception:
             if raise_error:
