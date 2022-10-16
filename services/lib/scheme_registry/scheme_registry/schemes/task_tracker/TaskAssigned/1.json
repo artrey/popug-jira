@@ -1,0 +1,59 @@
+{
+  "title": "TaskAssignedV1",
+  "type": "object",
+  "properties": {
+    "event_id": {
+      "title": "Event Id",
+      "type": "string",
+      "format": "uuid"
+    },
+    "event_name": {
+      "title": "Event Name",
+      "type": "string"
+    },
+    "event_version": {
+      "title": "Event Version",
+      "type": "integer"
+    },
+    "event_time": {
+      "title": "Event Time",
+      "type": "string",
+      "format": "date-time"
+    },
+    "producer": {
+      "title": "Producer",
+      "type": "string"
+    },
+    "data": {
+      "$ref": "#/definitions/TaskAssignedDataV1"
+    }
+  },
+  "required": [
+    "event_id",
+    "event_name",
+    "event_version",
+    "event_time",
+    "producer",
+    "data"
+  ],
+  "definitions": {
+    "TaskAssignedDataV1": {
+      "title": "TaskAssignedDataV1",
+      "type": "object",
+      "properties": {
+        "public_id": {
+          "title": "Public Id",
+          "type": "string"
+        },
+        "executor_public_id": {
+          "title": "Executor Public Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "public_id",
+        "executor_public_id"
+      ]
+    }
+  }
+}

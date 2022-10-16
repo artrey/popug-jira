@@ -15,6 +15,7 @@ import os
 from distutils.util import strtobool
 from pathlib import Path
 
+import scheme_registry
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -57,7 +58,6 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     "apps.users",
     "apps.api",
-    "apps.kafka_util",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -196,9 +196,7 @@ DYNAMIC_REST = {
     "PAGE_SIZE_QUERY_PARAM": "per_page",
 }
 
-KAFKA_SETTINGS = {
-    "BOOTSTRAP_SERVERS": os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
-    "CLIENT_ID": os.getenv("KAFKA_CLIENT_ID"),
-    "VALUE_SERIALIZER": os.getenv("KAFKA_VALUE_SERIALIZER", "apps.kafka_util.serializers.json_serialize"),
-    "VALUE_DESERIALIZER": os.getenv("KAFKA_VALUE_DESERIALIZER", "apps.kafka_util.serializers.json_deserialize"),
-}
+SCHEME_REGISTRY = scheme_registry.SchemeRegistry()
+
+KAFKA_HOSTS = os.getenv("KAFKA_BOOTSTRAP_SERVERS")
+KAFKA_CLIENT_ID = os.getenv("KAFKA_CLIENT_ID")

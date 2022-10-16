@@ -1,6 +1,7 @@
 import datetime as dt
 import json
 import pickle
+import uuid
 
 
 def json_default(obj):
@@ -9,6 +10,9 @@ def json_default(obj):
 
     if isinstance(obj, dt.date):
         return {"_isoformat_date": obj.isoformat()}
+
+    if isinstance(obj, uuid.UUID):
+        return str(obj)
 
     raise TypeError(f"unsupported type {type(obj)=}")
 

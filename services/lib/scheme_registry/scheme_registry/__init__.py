@@ -4,7 +4,7 @@ import os
 import pathlib
 import typing as ty
 
-from jsonschema import validate
+from scheme_registry.validate import validate
 
 
 class SchemeRegistry:
