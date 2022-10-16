@@ -64,13 +64,14 @@ class MessageProcessor(BaseMessageProcessor):
 
 
 class BaseConsumer(BaseSubscriber, abc.ABC):
+    supported_version: int = None
     router: ty.Dict[str, str] = {}
 
     def _should_process_message(self, message: Message):
         if not message.valid:
             logger.warning(f"Invalid {message=}")
             return False
-        return True
+        return message.data.get("event_version") == self.supported_version
 
     def _handle(self, message: Message):
         event_name = message.data.get("event_name")

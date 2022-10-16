@@ -1,6 +1,6 @@
 import uuid
 
-from django.db import models
+from django.db import models, transaction
 
 from apps.users.models import User
 
@@ -21,6 +21,26 @@ class Account(models.Model):
         if not bc:
             bc = BillingCycle.objects.create(account=self)
         return bc
+
+    @transaction.atomic
+    def create_transaction(
+        self,
+        type: str,
+        description: str,
+        debit: int = 0,
+        credit: int = 0,
+    ) -> "Transaction":
+        t = Transaction.objects.create(
+            account=self,
+            billing_cycle=self.current_billing_cycle,
+            type=type,
+            description=description,
+            debit=debit,
+            credit=credit,
+        )
+        self.balance += t.debit - t.credit
+        self.save(update_fields=["balance", "updated_at"])
+        return t
 
     def __str__(self):
         return str(self.public_id)

@@ -31,8 +31,12 @@ class Task(models.Model):
         if not self.cost_assign:
             self.cost_assign = random.randint(10, 20)
         if not self.cost_complete:
-            self.cost_assign = random.randint(20, 40)
+            self.cost_complete = random.randint(20, 40)
         return super().save(*args, **kwargs)
 
+    @property
+    def pretty_title(self) -> str:
+        return f"[{self.jira_id}] {self.title}"
+
     def __str__(self):
-        return self.title
+        return self.pretty_title
