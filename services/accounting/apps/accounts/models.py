@@ -1,6 +1,8 @@
 import uuid
 
 from django.db import models, transaction
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils import timezone
 
 from apps.users.models import User
@@ -81,3 +83,11 @@ class Transaction(models.Model):
 
     def __str__(self):
         return str(self.public_id)
+
+
+@receiver(post_save, sender=Transaction, dispatch_uid="transaction_create")
+def transaction_create(instance: Transaction, created: bool, **kwargs):
+    if not created:
+        return
+
+    # TODO: send transaction info
