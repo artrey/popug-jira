@@ -4,7 +4,7 @@ from accounting.celery import app
 from apps.accounts.models import Account
 
 
-@app.task
+@app.task(autoretry_for=(Exception,), max_retries=3)
 def daily_payouts():
     for account in Account.objects.all():
         transaction = None
