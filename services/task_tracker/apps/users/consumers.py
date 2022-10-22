@@ -8,16 +8,12 @@ logger = logging.getLogger(__name__)
 
 
 class UserConsumerV1(BaseConsumer):
+    supported_version = 1
     router = {
         "auth.UserCreated": "_user_created",
         "auth.UserUpdated": "_user_updated",
         "auth.UserDeleted": "_user_deleted",
     }
-
-    def _should_process_message(self, message: Message):
-        if not super()._should_process_message(message):
-            return False
-        return message.data.get("event_version") == 1
 
     def _user_created(self, message: Message):
         u = User.objects.create(**message.data.get("data"))
