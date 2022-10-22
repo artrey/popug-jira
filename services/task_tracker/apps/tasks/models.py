@@ -50,6 +50,20 @@ class Task(models.Model):
         return f"[{self.jira_id}] {self.title}"
 
 
+class OutboxTable(models.Model):
+    class Meta:
+        db_table = "task_outbox_table"
+        ordering = ["created_at"]
+
+    topic = models.CharField(max_length=200)
+    payload = models.JSONField(null=True, blank=True)
+    event_name = models.CharField(max_length=200)
+    version = models.SmallIntegerField()
+    sent = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
 @receiver(post_init, sender=Task, dispatch_uid="task_remember_state")
 def task_remember_state(instance: Task, **kwargs):
     instance._previous_executor_id = instance.executor_id
@@ -58,42 +72,36 @@ def task_remember_state(instance: Task, **kwargs):
 
 @receiver(post_save, sender=Task, dispatch_uid="task_create_update")
 def task_create_update(instance: Task, created: bool, **kwargs):
-    # TODO: think about batch sending
-
     if created:
-        send_event(
-            "task-registered",
-            {param: str(getattr(instance, param, "")) for param in ["public_id", "title", "jira_id", "status"]}
+        OutboxTable.objects.create(
+            topic="task-registered",
+            payload={param: str(getattr(instance, param, "")) for param in ["public_id", "title", "jira_id", "status"]}
             | {"executor_public_id": str(instance.executor.public_id)},
-            "task_tracker.TaskCreated",
-            2,
-            raise_error=True,
+            event_name="task_tracker.TaskCreated",
+            version=2,
         )
 
     elif instance._previous_status != instance.status and instance.status == instance.STATUS_COMPLETED:
-        send_event(
-            "task-completed",
-            {"public_id": str(instance.public_id), "executor_public_id": str(instance.executor.public_id)},
-            "task_tracker.TaskCompleted",
-            1,
-            raise_error=True,
+        OutboxTable.objects.create(
+            topic="task-completed",
+            payload={"public_id": str(instance.public_id), "executor_public_id": str(instance.executor.public_id)},
+            event_name="task_tracker.TaskCompleted",
+            version=1,
         )
 
     elif instance._previous_executor_id != instance.executor_id:
-        send_event(
-            "task-assigned",
-            {"public_id": str(instance.public_id), "executor_public_id": str(instance.executor.public_id)},
-            "task_tracker.TaskAssigned",
-            1,
-            raise_error=True,
+        OutboxTable.objects.create(
+            topic="task-assigned",
+            payload={"public_id": str(instance.public_id), "executor_public_id": str(instance.executor.public_id)},
+            event_name="task_tracker.TaskAssigned",
+            version=1,
         )
 
     else:
-        send_event(
-            "task-stream",
-            {param: str(getattr(instance, param, "")) for param in ["public_id", "title", "jira_id", "status"]}
+        OutboxTable.objects.create(
+            topic="task-stream",
+            payload={param: str(getattr(instance, param, "")) for param in ["public_id", "title", "jira_id", "status"]}
             | {"executor_public_id": str(instance.executor.public_id)},
-            "task_tracker.TaskUpdated",
-            2,
-            raise_error=True,
+            event_name="task_tracker.TaskUpdated",
+            version=2,
         )
