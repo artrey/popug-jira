@@ -6,11 +6,11 @@ from apps.tasks.models import Task
 
 
 class TaskEvent(models.Model):
-    EVENT_TYPE_DEBIT = "debit"
-    EVENT_TYPE_CREDIT = "credit"
+    EVENT_TYPE_ASSIGN = "assign"
+    EVENT_TYPE_COMPLETE = "complete"
     EVENT_TYPES = (
-        EVENT_TYPE_DEBIT,
-        EVENT_TYPE_CREDIT,
+        EVENT_TYPE_ASSIGN,
+        EVENT_TYPE_COMPLETE,
     )
 
     public_id = models.UUIDField(default=uuid.uuid4, unique=True)
