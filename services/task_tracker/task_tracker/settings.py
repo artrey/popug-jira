@@ -208,7 +208,7 @@ KAFKA_CLIENT_ID = os.getenv("KAFKA_CLIENT_ID")
 KAFKA_CONSUMER_TOPICS = {
     "user-stream": {
         "topic": "user-stream",  # no spaces allowed!
-        "group": "user-stream",
+        "group": f"{KAFKA_CLIENT_ID}-user-stream",
         "client": KAFKA_CLIENT_ID,
         "subscribers": ["apps.users.consumers.UserConsumerV1"],
         "message_processor": "common-processor",  # lookup in KAFKA_CONSUMERS_MESSAGE_PROCESSORS
@@ -229,3 +229,6 @@ KAFKA_CONSUMER_SSL_SETTINGS = {
 }
 
 AUTH_SERVER_VERIFY_ENDPOINT = os.getenv("AUTH_SERVER_VERIFY_ENDPOINT")
+
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://127.0.0.1:6379/3")
+CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://127.0.0.1:6379/4")

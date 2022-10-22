@@ -1,7 +1,6 @@
-import datetime as dt
 import enum
 
-from pydantic import BaseModel
+from pydantic import BaseModel, constr
 
 from schemes_generator import BaseEventV1
 
@@ -23,6 +22,22 @@ class TaskCreatedV1(BaseEventV1[TaskDataV1]):
 
 
 class TaskUpdatedV1(BaseEventV1[TaskDataV1]):
+    pass
+
+
+class TaskDataV2(BaseModel):
+    public_id: str
+    title: constr(regex=r"^[^\[][^\]]*")  # noqa: F722
+    jira_id: str
+    status: TaskStatusEnumV1
+    executor_public_id: str
+
+
+class TaskCreatedV2(BaseEventV1[TaskDataV2]):
+    pass
+
+
+class TaskUpdatedV2(BaseEventV1[TaskDataV2]):
     pass
 
 

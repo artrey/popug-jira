@@ -42,6 +42,9 @@ python manage.py createsuperuser
 ## TODO
 
 Problem with django-kafka-consumer admin page: `from_db_value() missing 1 required positional argument: 'context'`
+
 Solution: https://github.com/stephenmcd/mezzanine/issues/1971#issuecomment-724380235
+
+`.../site-packages/kafka_consumer/fields.py:37`
 
 ---

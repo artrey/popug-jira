@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from apps.accounts.models import Account, Transaction
+from apps.accounts.models import Account, BillingCycle, Transaction
 
 
 @admin.register(Account)
@@ -18,6 +18,25 @@ class AccountAdmin(admin.ModelAdmin):
         "user__username",
         "user__first_name",
         "user__last_name",
+    ]
+
+
+@admin.register(BillingCycle)
+class BillingCycleAdmin(admin.ModelAdmin):
+    list_display = [
+        "public_id",
+        "start_date",
+        "end_date",
+        "closed",
+        "account",
+    ]
+    list_select_related = ["account"]
+    list_filter = ["closed", "start_date", "end_date"]
+    list_editable = ["closed"]
+    search_fields = [
+        "public_id",
+        "account__public_id",
+        "account__user__public_id",
     ]
 
 

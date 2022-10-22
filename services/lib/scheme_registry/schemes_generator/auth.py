@@ -15,6 +15,7 @@ class UserRoleEnumV1(enum.Enum):
 class UserDataV1(BaseModel):
     public_id: str
     username: str
+    email: str
     first_name: str
     last_name: str
     role: UserRoleEnumV1

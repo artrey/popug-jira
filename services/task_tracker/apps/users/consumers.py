@@ -25,8 +25,8 @@ class UserConsumerV1(BaseConsumer):
 
     def _user_updated(self, message: Message):
         data = message.data.get("data")
-        User.objects.filter(public_id=data.pop("public_id")).update(**data)
-        logger.info(f"User updated {data}")
+        User.objects.update_or_create(public_id=data.pop("public_id"), defaults=data)
+        logger.info(f"User updated/created {data=}")
 
     def _user_deleted(self, message: Message):
         data = message.data.get("data")

@@ -9,6 +9,9 @@ from kafka_util import producer
 
 from apps.tasks.exceptions import NoAvailablePopugs
 from apps.users.models import User
+from task_tracker.celery import RetryableTask
+
+send_event = RetryableTask(producer.send_event)
 
 
 class Task(models.Model):
@@ -24,6 +27,7 @@ class Task(models.Model):
 
     public_id = models.UUIDField(default=uuid.uuid4, unique=True)
     title = models.CharField(max_length=100)
+    jira_id = models.CharField(max_length=20)
     description = models.TextField(null=True, blank=True)
     status = models.CharField(max_length=20, choices=[(x, x) for x in STATUSES], default=STATUS_IN_PROGRESS)
     executor = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="tasks", blank=True)
@@ -43,7 +47,7 @@ class Task(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.title
+        return f"[{self.jira_id}] {self.title}"
 
 
 @receiver(post_init, sender=Task, dispatch_uid="task_remember_state")
@@ -57,35 +61,39 @@ def task_create_update(instance: Task, created: bool, **kwargs):
     # TODO: think about batch sending
 
     if created:
-        producer.send_event(
+        send_event(
             "task-registered",
-            {param: str(getattr(instance, param, "")) for param in ["public_id", "title", "status"]}
+            {param: str(getattr(instance, param, "")) for param in ["public_id", "title", "jira_id", "status"]}
             | {"executor_public_id": str(instance.executor.public_id)},
             "task_tracker.TaskCreated",
-            1,
+            2,
+            raise_error=True,
         )
 
     elif instance._previous_status != instance.status and instance.status == instance.STATUS_COMPLETED:
-        producer.send_event(
+        send_event(
             "task-completed",
             {"public_id": str(instance.public_id), "executor_public_id": str(instance.executor.public_id)},
             "task_tracker.TaskCompleted",
             1,
+            raise_error=True,
         )
 
     elif instance._previous_executor_id != instance.executor_id:
-        producer.send_event(
+        send_event(
             "task-assigned",
             {"public_id": str(instance.public_id), "executor_public_id": str(instance.executor.public_id)},
             "task_tracker.TaskAssigned",
             1,
+            raise_error=True,
         )
 
     else:
-        producer.send_event(
+        send_event(
             "task-stream",
-            {param: str(getattr(instance, param, "")) for param in ["public_id", "title", "status"]}
+            {param: str(getattr(instance, param, "")) for param in ["public_id", "title", "jira_id", "status"]}
             | {"executor_public_id": str(instance.executor.public_id)},
             "task_tracker.TaskUpdated",
-            1,
+            2,
+            raise_error=True,
         )
