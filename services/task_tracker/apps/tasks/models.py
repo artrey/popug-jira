@@ -9,6 +9,9 @@ from kafka_util import producer
 
 from apps.tasks.exceptions import NoAvailablePopugs
 from apps.users.models import User
+from task_tracker.celery import RetryableTask
+
+send_event = RetryableTask(producer.send_event)
 
 
 class Task(models.Model):
@@ -58,35 +61,39 @@ def task_create_update(instance: Task, created: bool, **kwargs):
     # TODO: think about batch sending
 
     if created:
-        producer.send_event(
+        send_event(
             "task-registered",
             {param: str(getattr(instance, param, "")) for param in ["public_id", "title", "jira_id", "status"]}
             | {"executor_public_id": str(instance.executor.public_id)},
             "task_tracker.TaskCreated",
             2,
+            raise_error=True,
         )
 
     elif instance._previous_status != instance.status and instance.status == instance.STATUS_COMPLETED:
-        producer.send_event(
+        send_event(
             "task-completed",
             {"public_id": str(instance.public_id), "executor_public_id": str(instance.executor.public_id)},
             "task_tracker.TaskCompleted",
             1,
+            raise_error=True,
         )
 
     elif instance._previous_executor_id != instance.executor_id:
-        producer.send_event(
+        send_event(
             "task-assigned",
             {"public_id": str(instance.public_id), "executor_public_id": str(instance.executor.public_id)},
             "task_tracker.TaskAssigned",
             1,
+            raise_error=True,
         )
 
     else:
-        producer.send_event(
+        send_event(
             "task-stream",
             {param: str(getattr(instance, param, "")) for param in ["public_id", "title", "jira_id", "status"]}
             | {"executor_public_id": str(instance.executor.public_id)},
             "task_tracker.TaskUpdated",
             2,
+            raise_error=True,
         )
