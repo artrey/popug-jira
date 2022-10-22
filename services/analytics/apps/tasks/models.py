@@ -21,12 +21,12 @@ class Task(models.Model):
     )
 
     public_id = models.UUIDField(default=uuid.uuid4, unique=True)
-    title = models.CharField(max_length=100)
-    jira_id = models.CharField(max_length=20)
-    status = models.CharField(max_length=20, choices=[(x, x) for x in STATUSES], default=STATUS_IN_PROGRESS)
-    executor = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="tasks")
-    cost_assign = models.PositiveIntegerField()
-    cost_complete = models.PositiveIntegerField()
+    title = models.CharField(max_length=100, null=True, blank=True)
+    jira_id = models.CharField(max_length=20, null=True, blank=True)
+    status = models.CharField(max_length=20, choices=[(x, x) for x in STATUSES], null=True, blank=True)
+    executor = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="tasks", null=True, blank=True)
+    cost_assign = models.PositiveIntegerField(null=True, blank=True)
+    cost_complete = models.PositiveIntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
