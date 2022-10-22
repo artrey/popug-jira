@@ -1,6 +1,7 @@
 import datetime as dt
 
 from django.db.models import Sum
+from django.db.models.functions import Coalesce
 from django.utils import timezone
 from dynamic_rest.viewsets import DynamicModelViewSet
 from rest_framework.decorators import action, api_view, permission_classes
@@ -56,8 +57,8 @@ def company_earn(request):
         since = dt.datetime.fromisoformat(since)
 
     total_sums = Transaction.objects.filter(created_at__gte=since, created_at__lt=to).aggregate(
-        total_debit=Sum("debit"),
-        total_credit=Sum("credit"),
+        total_debit=Coalesce(Sum("debit"), 0),
+        total_credit=Coalesce(Sum("credit"), 0),
     )
     money = total_sums["total_credit"] - total_sums["total_debit"]
 
