@@ -6,6 +6,7 @@ from django.dispatch import receiver
 from django.utils import timezone
 
 from apps.users.models import User
+from apps.util import send_event
 
 
 class Account(models.Model):
@@ -85,9 +86,13 @@ class Transaction(models.Model):
         return str(self.public_id)
 
 
-@receiver(post_save, sender=Transaction, dispatch_uid="transaction_create")
-def transaction_create(instance: Transaction, created: bool, **kwargs):
-    if not created:
-        return
-
-    # TODO: send transaction info
+@receiver(post_save, sender=Account, dispatch_uid="transaction_create")
+def transaction_create(instance: Account, created: bool, **kwargs):
+    send_event(
+        "account-stream",
+        {param: str(getattr(instance, param, "")) for param in ["public_id", "balance"]}
+        | {"owner_public_id": str(instance.user.public_id)},
+        "accounting.AccountCreated" if created else "accounting.AccountUpdated",
+        1,
+        raise_error=True,
+    )
