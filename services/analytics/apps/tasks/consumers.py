@@ -18,6 +18,7 @@ class TaskConsumerV1(BaseConsumer):
         # "task_tracker.TaskUpdated": "_task_updated",
         "task_tracker.TaskCompleted": "_task_completed",
         "task_tracker.TaskAssigned": "_task_assigned",
+        "accounting.TaskUpdated": "_task_costs_updated",
     }
 
     def _update_or_create_task(self, message: Message) -> Task:
@@ -38,6 +39,14 @@ class TaskConsumerV1(BaseConsumer):
     def _task_updated(self, message: Message):
         task, created = self._update_or_create_task(message)
         logger.info(f"Task updated/created {task}")
+
+    def _task_costs_updated(self, message: Message):
+        data = message.data.get("data")
+        task = Task.objects.update_or_create(
+            public_id=data.pop("public_id"),
+            defaults=data,
+        )
+        logger.info(f"Task costs updated {task=}")
 
     def _task_completed(self, message: Message):
         data = message.data.get("data")
