@@ -6,6 +6,8 @@ drf-yasg
 django-filter
 dynamic-rest
 kafka-python
+celery
+redis
 
 # local libs: `python setup.py develop` from project root
 # kafka-util
