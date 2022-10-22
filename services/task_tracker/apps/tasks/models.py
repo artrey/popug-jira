@@ -5,13 +5,9 @@ import uuid
 from django.db import models
 from django.db.models.signals import post_init, post_save
 from django.dispatch import receiver
-from kafka_util import producer
 
 from apps.tasks.exceptions import NoAvailablePopugs
 from apps.users.models import User
-from task_tracker.celery import RetryableTask
-
-send_event = RetryableTask(producer.send_event)
 
 
 class Task(models.Model):
@@ -62,6 +58,9 @@ class OutboxTable(models.Model):
     sent = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        return f"[{self.id}] {self.topic} | {self.event_name} | {self.version}"
 
 
 @receiver(post_init, sender=Task, dispatch_uid="task_remember_state")
