@@ -4,6 +4,7 @@ from django.db import transaction
 from kafka_consumer.exceptions import ErrorMessageReceiverProcess
 from kafka_util.consumer import BaseConsumer, Message
 
+from apps.analytics.models import TaskEvent
 from apps.tasks.models import Task
 from apps.users.models import User
 
@@ -18,6 +19,7 @@ class TaskConsumerV1(BaseConsumer):
         # "task_tracker.TaskUpdated": "_task_updated",
         "task_tracker.TaskCompleted": "_task_completed",
         "task_tracker.TaskAssigned": "_task_assigned",
+        "accounting.TaskUpdated": "_task_costs_updated",
     }
 
     def _update_or_create_task(self, message: Message) -> Task:
@@ -32,12 +34,20 @@ class TaskConsumerV1(BaseConsumer):
 
     def _task_created(self, message: Message):
         task, created = self._update_or_create_task(message)
-        task.executor.account.create_transaction("outcome", task.pretty_title, credit=task.cost_assign)
+        TaskEvent.objects.create(task=task, type=TaskEvent.EVENT_TYPE_COMPLETE)
         logger.info(f"Task created {task}")
 
     def _task_updated(self, message: Message):
         task, created = self._update_or_create_task(message)
         logger.info(f"Task updated/created {task}")
+
+    def _task_costs_updated(self, message: Message):
+        data = message.data.get("data")
+        task = Task.objects.update_or_create(
+            public_id=data.pop("public_id"),
+            defaults=data,
+        )
+        logger.info(f"Task costs updated {task=}")
 
     def _task_completed(self, message: Message):
         data = message.data.get("data")
@@ -51,7 +61,7 @@ class TaskConsumerV1(BaseConsumer):
         with transaction.atomic():
             task.status = task.STATUS_COMPLETED
             task.save(update_fields=["status", "updated_at"])
-            task.executor.account.create_transaction("income", task.pretty_title, debit=task.cost_complete)
+            TaskEvent.objects.create(task=task, type=TaskEvent.EVENT_TYPE_ASSIGN)
 
         logger.info(f"Task completed {task}")
 
@@ -70,7 +80,7 @@ class TaskConsumerV1(BaseConsumer):
         with transaction.atomic():
             task.executor = user
             task.save(update_fields=["executor", "updated_at"])
-            task.executor.account.create_transaction("outcome", task.pretty_title, credit=task.cost_assign)
+            TaskEvent.objects.create(task=task, type=TaskEvent.EVENT_TYPE_COMPLETE)
 
 
 class TaskConsumerV2(TaskConsumerV1):
